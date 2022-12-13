@@ -200,8 +200,12 @@ impl GameState for State {
 
 fn main() -> BError {
     // bracket-lib (over-)uses build pattern (quite common in Rust)
-    let context = BTermBuilder::simple80x50()
+    let context = BTermBuilder::new()
+        .with_font("../resources/flappy32.png", 32, 32)
+        .with_simple_console(SCREEN_WIDTH, SCREEN_HEIGHT, "../resources/flappy32.png")
+        .with_fancy_console(SCREEN_WIDTH, SCREEN_HEIGHT, "../resources/flappy32.png")  // Fancy consoles provide for fractional positioning on the terminal.
         .with_title("Flappy Dragon")
+        .with_tile_dimensions(16, 16)
         .build()?; // ? operator passes errors to the parrent function. Notice function signature!
 
     // Call to start executing game loop.
