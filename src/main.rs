@@ -2,18 +2,20 @@
 
 use bracket_lib::prelude::*;
 
+const SCREEN_WIDTH: i32 = 80;
+const SCREEN_HEIGHT: i32 = 50;
+
+const FRAME_DURATION: f32 = 75.0;
+
+const TERMINAL_VELOCITY: f32 = 2.0;
+const VELOCITY_INCREMENT: f32 = 0.2;
+const VELOCITY_ON_FLAP: f32 = -2.0;
+
 enum GameMode {
     Menu,
     Playing,
     End,
 }
-
-const SCREEN_WIDTH: i32 = 80;
-const SCREEN_HEIGHT: i32 = 50;
-const FRAME_DURATION: f32 = 75.0;
-const TERMINAL_VELOCITY: f32 = 2.0;
-const VELOCITY_INCREMENT: f32 = 0.2;
-const VELOCITY_ON_FLAP: f32 = -2.0;
 
 struct Player {
     x: i32,        // Progress through the level
@@ -153,7 +155,7 @@ impl State {
 
         if let Some(key) = ctx.key {
             match key {
-                VirtualKeyCode::P => self.restart(ctx),
+                VirtualKeyCode::P => self.restart(),
                 VirtualKeyCode::Q => ctx.quitting = true, // instructs bracket-lib that user is ready to terminate the app
                 _ => {}
             }
@@ -169,14 +171,14 @@ impl State {
 
         if let Some(key) = ctx.key {
             match key {
-                VirtualKeyCode::P => self.restart(ctx),
+                VirtualKeyCode::P => self.restart(),
                 VirtualKeyCode::Q => ctx.quitting = true,
                 _ => {}
             }
         }
     }
 
-    fn restart(&mut self, ctx: &mut BTerm) {
+    fn restart(&mut self) {
         self.player = Player::new(5, 25);
         self.frame_time = 0.0;
         self.obstacle = Obstacle::new(SCREEN_WIDTH, 0);
