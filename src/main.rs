@@ -34,7 +34,7 @@ impl Player {
 
     fn render(&mut self, ctx: &mut BTerm) {
         // Sets a single character on screen
-        ctx.set(0, self.y, YELLOW, BLACK, to_cp437('@'));
+        ctx.set(0, self.y, YELLOW, NAVY, to_cp437('@'));
     }
 
     fn gravity_and_move(&mut self) {
