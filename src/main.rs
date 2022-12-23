@@ -5,11 +5,13 @@ use bracket_lib::prelude::*;
 const SCREEN_WIDTH: i32 = 80;
 const SCREEN_HEIGHT: i32 = 50;
 
-const FRAME_DURATION: f32 = 75.0;
+const FRAME_DURATION: f32 = 100.0;
 
 const TERMINAL_VELOCITY: f32 = 2.0;
 const VELOCITY_INCREMENT: f32 = 0.2;
 const VELOCITY_ON_FLAP: f32 = -2.0;
+
+const DRAGON_FRAMES : [u16; 6] = [64, 1, 2, 3, 2, 1];
 
 enum GameMode {
     Menu,
@@ -19,22 +21,34 @@ enum GameMode {
 
 struct Player {
     x: i32,        // Progress through the level
-    y: i32,        // Vertical position in screen-space
+    y: f32,        // Vertical position in screen-space
     velocity: f32, // Vertical velocity
+    frame: usize,  // Usize to index arrays
 }
 
 impl Player {
-    fn new(x: i32, y: i32) -> Self {
+    fn new(x: i32, y: f32) -> Self {
         Player {
             x,
-            y,
+            y: y as f32,
             velocity: 0.0,
+            frame: 0,
         }
     }
 
     fn render(&mut self, ctx: &mut BTerm) {
-        // Sets a single character on screen
-        ctx.set(0, self.y, YELLOW, NAVY, to_cp437('@'));
+        ctx.set_active_console(1);
+        ctx.cls();
+        ctx.set_fancy(
+            PointF::new(0.0, self.y),
+            1,
+            Degrees::new(0.0),
+            PointF::new(2.0, 2.0),
+            WHITE,
+            NAVY,
+            DRAGON_FRAMES[self.frame]
+        );
+        ctx.set_active_console(0);
     }
 
     fn gravity_and_move(&mut self) {
@@ -42,11 +56,14 @@ impl Player {
             self.velocity += VELOCITY_INCREMENT;
         }
 
-        self.y += self.velocity as i32; // Rounding Down
-        self.x += 1;
-        if self.y < 0 {
-            self.y = 0;
+        self.y += self.velocity; // Rounding Down
+        if self.y < 0.0 {
+            self.y = 0.0;
         }
+
+        self.x += 1;
+        self.frame += 1;
+        self.frame = self.frame % 6;
     }
 
     fn flap(&mut self) {
@@ -87,9 +104,9 @@ impl Obstacle {
     }
 
     fn hit_obstacle(&self, player: &Player) -> bool {
-        let half_size = self.size / 2;
+        let half_size = (self.size / 2) as f32;
         let does_x_match = player.x == self.x;
-        let player_in_gap = (player.y - self.gap_y).abs() < half_size;
+        let player_in_gap = (player.y - self.gap_y as f32).abs() < half_size;
 
         does_x_match && !player_in_gap
     }
@@ -106,7 +123,7 @@ struct State {
 impl State {
     fn new() -> Self {
         State {
-            player: Player::new(5, 25),
+            player: Player::new(5, 25.0),
             frame_time: 0.0,
             obstacle: Obstacle::new(SCREEN_WIDTH, 0),
             mode: GameMode::Menu,
@@ -142,7 +159,7 @@ impl State {
         }
 
         // If player has fallen off the bottom of the screen, END the game
-        if self.player.y > SCREEN_HEIGHT || self.obstacle.hit_obstacle(&self.player) {
+        if self.player.y > SCREEN_HEIGHT as f32 || self.obstacle.hit_obstacle(&self.player) {
             self.mode = GameMode::End;
         }
     }
@@ -179,7 +196,7 @@ impl State {
     }
 
     fn restart(&mut self) {
-        self.player = Player::new(5, 25);
+        self.player = Player::new(5, 25.0);
         self.frame_time = 0.0;
         self.obstacle = Obstacle::new(SCREEN_WIDTH, 0);
         self.mode = GameMode::Playing;
