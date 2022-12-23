@@ -40,7 +40,7 @@ impl Player {
         ctx.set_active_console(1);
         ctx.cls();
         ctx.set_fancy(
-            PointF::new(0.0, self.y),
+            PointF::new(1.0, self.y),
             1,
             Degrees::new(0.0),
             PointF::new(2.0, 2.0),
@@ -56,7 +56,7 @@ impl Player {
             self.velocity += VELOCITY_INCREMENT;
         }
 
-        self.y += self.velocity; // Rounding Down
+        self.y += self.velocity;
         if self.y < 0.0 {
             self.y = 0.0;
         }
