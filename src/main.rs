@@ -92,13 +92,18 @@ impl Obstacle {
         let screen_x = self.x - player_x;
         let half_size = self.size / 2;
 
+        // Adding ground tiles
+        for x in 0..SCREEN_WIDTH {
+            ctx.set(x, SCREEN_HEIGHT-1, WHITE, WHITE, to_cp437('#'));
+        }
+
         // Draw top half of the obstacle
         for y in 0..self.gap_y - half_size {
             ctx.set(screen_x, y, RED, BLACK, to_cp437('|'));
         }
 
-        // Draw botton half of the obstacle
-        for y in self.gap_y + half_size..SCREEN_HEIGHT {
+        // Draw botton half of the obstacle -- (-1) to respect ground tiles
+        for y in self.gap_y + half_size..SCREEN_HEIGHT - 1 {
             ctx.set(screen_x, y, RED, BLACK, to_cp437('|'));
         }
     }
