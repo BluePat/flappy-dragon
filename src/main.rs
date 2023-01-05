@@ -5,7 +5,7 @@ use bracket_lib::prelude::*;
 const SCREEN_WIDTH: i32 = 80;
 const SCREEN_HEIGHT: i32 = 50;
 
-const FRAME_DURATION: f32 = 100.0;
+const FRAME_DURATION: f32 = 60.0;
 
 const TERMINAL_VELOCITY: f32 = 2.0;
 const VELOCITY_INCREMENT: f32 = 0.2;
